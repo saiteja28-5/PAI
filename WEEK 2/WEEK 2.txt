@@ -1,0 +1,38 @@
+import heapq
+
+def jug_a_star(c1, c2, target):
+
+    h = lambda s: min(abs(s[0] - target),
+                      abs(s[1] - target))
+
+    moves = lambda x, y: [
+        (c1, y), (x, c2), (0, y), (x, 0),
+        (x - min(x, c2 - y), y + min(x, c2 - y)),
+        (x + min(y, c1 - x), y - min(y, c1 - x))
+    ]
+
+    frontier = [(h((0, 0)), 0, (0, 0), [(0, 0)])]
+    visited = set()
+
+    while frontier:
+        f, g, s, path = heapq.heappop(frontier)
+
+        if s[0] == target or s[1] == target:
+            return path
+
+        if s in visited:
+            continue
+        visited.add(s)
+
+        for n in moves(*s):
+            if n not in visited:
+                heapq.heappush(
+                    frontier,
+                    (g + 1 + h(n), g + 1, n, path + [n])
+                )
+
+    return None
+
+
+sol = jug_a_star(4, 3, 2)
+print("Solution path:", *sol, sep="\n")
